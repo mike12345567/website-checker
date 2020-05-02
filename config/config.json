@@ -1,70 +1,73 @@
 {
   "period_ms": 600000,
+  "parallel": 2,
+  "email_title": "Difference Found - Switch",
+  "to": "",
   "websites": [
     {
       "name": "argos-neon",
       "url": "https://www.argos.co.uk/product/2077921",
-      "diff": 1
+      "diff": 4
     },
     {
       "name": "argos-grey",
       "url": "https://www.argos.co.uk/product/2078126",
-      "diff": 1
+      "diff": 4
     },
     {
       "name": "nintendo-neon",
       "url": "https://store.nintendo.co.uk/nintendo-switch-console/nintendo-switch-with-neon-blue-neon-red-joy-con-controllers/12245286.html",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "nintendo-grey",
       "url": "https://store.nintendo.co.uk/nintendo-switch-console/nintendo-switch-with-grey-joy-con-controllers/12245184.html",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "nintendo-neon-animal",
       "url": "https://store.nintendo.co.uk/nintendo-switch-console/nintendo-switch-neon-blue-neon-red-animal-crossing-new-horizons-pack/12459923.html",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "nintendo-grey-animal",
       "url": "https://store.nintendo.co.uk/nintendo-switch-console/nintendo-switch-grey-animal-crossing-new-horizons-pack/12459924.html",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "amazon-grey",
       "url": "https://www.amazon.co.uk/Nintendo-10002200-Switch-Grey/dp/B07W6HNZNW/ref=sr_1_2?tag=georiot-trd-21&dchild=1&keywords=nintendo+switch&qid=1588242847&sr=8-2&ascsubtag=trd-9645728539797692000-21",
-      "diff": 2
+      "diff": 4
     },
     {
       "name": "amazon-neon",
       "url": "https://www.amazon.co.uk/Nintendo-10002200-Switch-Grey/dp/B07W4CK8KR/ref=sr_1_2?tag=georiot-trd-21&dchild=1&keywords=nintendo%2Bswitch&qid=1588242847&sr=8-2&ascsubtag=trd-9645728539797692000-21&th=1",
-      "diff": 2
+      "diff": 4
     },
     {
       "name": "smyths-neon",
       "url": "https://www.smythstoys.com/uk/en-gb/video-games-and-tablets/nintendo-gaming/nintendo-switch/nintendo-switch-consoles/nintendo-switch-neon-red-blue-with-improved-battery-life/p/182022",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "smyths-grey",
       "url": "https://www.smythstoys.com/uk/en-gb/video-games-and-tablets/nintendo-gaming/nintendo-switch/nintendo-switch-consoles/nintendo-switch-grey-with-improved-battery-life/p/182023",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "currys-grey",
       "url": "https://www.currys.co.uk/gbuk/tv-and-home-entertainment/gaming/gaming-consoles/nintendo-switch-grey-10160718-pdt.html",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "currys-neon",
       "url": "https://www.currys.co.uk/gbuk/tv-and-home-entertainment/gaming/gaming-consoles/nintendo-switch-neon-red-blue-10163022-pdt.html",
-      "diff": 0
+      "diff": 4
     },
     {
       "name": "john-lewis-grey",
       "url": "https://www.johnlewis.com/nintendo-switch-1-1-32gb-console-with-joy-con/grey/p4751133?s_afcid=af_38503&tmad=c&awc=1203_1588414191_a0eae0eccc211267509d40c3f443b3e7&tmcampid=48",
-      "diff": 0
+      "diff": 4
     }
   ]
 }

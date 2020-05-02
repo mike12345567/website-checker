@@ -6,11 +6,14 @@ let fs = require("fs");
 const pixelmatch = require("pixelmatch");
 const PNG = require("pngjs").PNG;
 let config = require("./config/config");
+var nodemailer = require("nodemailer");
+let transporter = null;
 
 let BROWSER = null;
 let INTERVAL = null;
 let FILE_TYPE = ".png";
-let RENDER_DIR = "images";
+let RENDER_DIR = "renders";
+let OLD_RENDER_DIR = "prevrenders";
 const MAX_PIXELS = 1920 * 1080;
 
 function timeout(time) {
@@ -51,32 +54,90 @@ function getDiffPixelCount(oldName, newName) {
   });
 }
 
-async function operate() {
-  let page = await makeNewPage();
-  for (let website of config.websites) {
-    await page.goto(website.url);
-    let locToWrite = path.join(process.cwd(), RENDER_DIR, website.name + FILE_TYPE);
-    let oldLoc = path.join(process.cwd(), RENDER_DIR, "OLD-" + website.name + FILE_TYPE);
-    if(fs.existsSync(locToWrite)) {
-      fs.renameSync(locToWrite, oldLoc);
+function confirmDirExists(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+}
+
+function sendEmail(to, msg) {
+  let mailOptions = {
+    from: process.env["EMAIL_USER"],
+    to: to,
+    subject: config.email_title,
+    text: msg
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
     }
-    // wait a second to make sure page has loaded successfully
-    await timeout(3000);
-    await page.screenshot({path: locToWrite});
-    if (fs.existsSync(oldLoc)) {
-      let diff = await getDiffPixelCount(oldLoc, locToWrite);
-      let percent = (diff / MAX_PIXELS) * 100;
-      if (percent > website.diff) {
-        console.log(`There is a difference with ${website.name} at ${new Date().toISOString()} - difference was ${percent}%`);
-      }
+  });
+}
+
+async function runOnPage(page, website) {
+  await page.goto(website.url);
+  let locToWrite = path.join(process.cwd(), RENDER_DIR, website.name + FILE_TYPE);
+  let oldLoc = path.join(process.cwd(), OLD_RENDER_DIR, website.name + FILE_TYPE);
+  if(fs.existsSync(locToWrite)) {
+    fs.renameSync(locToWrite, oldLoc);
+  }
+  // wait a second to make sure page has loaded successfully
+  await timeout(3000);
+  await page.screenshot({path: locToWrite});
+  if (fs.existsSync(oldLoc)) {
+    let diff = await getDiffPixelCount(oldLoc, locToWrite);
+    let percent = (diff / MAX_PIXELS) * 100;
+    if (percent > website.diff) {
+      let msg = `There is a difference with ${website.name} at ${new Date().toISOString()} - difference was ${percent}%`
+      console.log(msg);
+      sendEmail(config.to, `${msg} - URL: ${website.url}`);
     }
   }
-  await page.close();
+}
+
+async function operate() {
+  confirmDirExists(RENDER_DIR);
+  confirmDirExists(OLD_RENDER_DIR);
+  let parallel = Math.max(1, config.parallel);
+  let pages = [];
+  for (let i = 0; i < parallel; i++) {
+    pages.push(await makeNewPage());
+  }
+  let websiteIdx = 0;
+  do {
+    let promises = [];
+    for (let page of pages) {
+      if (websiteIdx >= config.websites.length) {
+        break;
+      }
+      promises.push(runOnPage(page, config.websites[websiteIdx++]));
+    }
+    if (promises.length !== 0) {
+      await Promise.all(promises);
+    }
+  } while (websiteIdx < config.websites.length);
+  // cleanup
+  for (let page of pages) {
+    await page.close();
+  }
 }
 
 async function init() {
-  BROWSER = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  if (process.env["EMAIL_USER"] == null || process.env["EMAIL_PASS"] == null) {
+    console.error("Please specify environment variables 'EMAIL_USER' and 'EMAIL_PASS' for gmail.");
+    process.exit(-1);
+  }
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env["EMAIL_USER"],
+      pass: process.env["EMAIL_PASS"]
+    }
+  });
 
+  BROWSER = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   let updating = false;
   INTERVAL = setInterval(async () => {
     if (updating) {
