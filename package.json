@@ -1,0 +1,20 @@
+{
+  "name": "website-checker",
+  "version": "0.1.0",
+  "description": "An application to check whether or not a website page has been updated (avoiding ads).\u001b[1;5D\u001b[1;5D\u001b[D\u001bignoring",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Drury",
+  "license": "MIT",
+  "dependencies": {
+    "@cliqz/adblocker-puppeteer": "^1.14.2",
+    "cross-fetch": "^3.0.4",
+    "pixelmatch": "^5.2.0",
+    "pngjs": "^5.0.0"
+  },
+  "devDependencies": {
+    "puppeteer": "^3.0.2"
+  }
+}
