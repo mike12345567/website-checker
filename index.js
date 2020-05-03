@@ -122,6 +122,7 @@ async function operate() {
   for (let page of pages) {
     await page.close();
   }
+  console.log(`Operation completed at ${(new Date()).toISOString()}`);
 }
 
 async function init() {
@@ -136,7 +137,7 @@ async function init() {
       pass: process.env["EMAIL_PASS"]
     }
   });
-
+  console.log("System init'd, commencing operations.");
   BROWSER = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   let updating = false;
   INTERVAL = setInterval(async () => {
