@@ -2,7 +2,7 @@
   "period_ms": 600000,
   "parallel": 2,
   "email_title": "Difference Found - Switch",
-  "to": "",
+  "to": [],
   "websites": [
     {
       "name": "argos-neon",

@@ -60,19 +60,34 @@ function confirmDirExists(dir) {
   }
 }
 
-function sendEmail(to, msg) {
-  let mailOptions = {
-    from: process.env["EMAIL_USER"],
-    to: to,
-    subject: config.email_title,
-    text: msg
-  };
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
+function sendEmail(to, msg, oldLoc, newLoc) {
+  return new Promise((resolve, reject) => {
+    let oldOpt = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    let mailOptions = {
+      from: process.env["EMAIL_USER"],
+      to: to,
+      subject: config.email_title,
+      text: msg,
+      attachments: [
+        {
+          filename: "new-capture.png",
+          content: fs.createReadStream(newLoc)
+        },
+        {
+          filename: "old-capture.png",
+          content: fs.createReadStream(oldLoc)
+        }
+      ]
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(info);
+      }
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = oldOpt;
+    });
   });
 }
 
@@ -90,9 +105,12 @@ async function runOnPage(page, website) {
     let diff = await getDiffPixelCount(oldLoc, locToWrite);
     let percent = (diff / MAX_PIXELS) * 100;
     if (percent > website.diff) {
-      let msg = `There is a difference with ${website.name} at ${new Date().toISOString()} - difference was ${percent}%`
+      let msg = `There is a difference with ${website.name} at ${new Date().toISOString()} - difference was ${percent}%`;
       console.log(msg);
-      sendEmail(config.to, `${msg} - URL: ${website.url}`);
+      await sendEmail(config.to, `${msg} - URL: ${website.url}`, oldLoc, locToWrite);
+	    // cleanup
+	    fs.unlinkSync(locToWrite);
+	    fs.unlinkSync(oldLoc);
     }
   }
 }
@@ -128,6 +146,10 @@ async function operate() {
 async function init() {
   if (process.env["EMAIL_USER"] == null || process.env["EMAIL_PASS"] == null) {
     console.error("Please specify environment variables 'EMAIL_USER' and 'EMAIL_PASS' for gmail.");
+    process.exit(-1);
+  }
+  if (config.to.length === 0) {
+    console.error("Cannot function without a specified user to email.");
     process.exit(-1);
   }
   transporter = nodemailer.createTransport({
