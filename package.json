@@ -11,7 +11,7 @@
   "dependencies": {
     "@cliqz/adblocker-puppeteer": "^1.14.2",
     "cross-fetch": "^3.0.4",
-    "nodemailer": "^6.4.6",
+    "nodemailer": "^6.4.16",
     "pixelmatch": "^5.2.0",
     "pngjs": "^5.0.0"
   },
